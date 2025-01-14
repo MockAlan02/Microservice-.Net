@@ -1,0 +1,6 @@
+@Api.Gateway.WebClient_HostAddress = http://localhost:5297
+
+GET {{Api.Gateway.WebClient_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

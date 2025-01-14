@@ -1,0 +1,45 @@
+﻿@page "{id:int}"
+@model Clients.WebClient.Pages.Order.IndexModel
+@{
+}
+
+<h1>Order Details</h1>
+
+<div>
+    <strong>Nombre Cliente:</strong>: <p>@Model.OrderDto!.Client!.Name</p>
+    <strong>Tipo de pago:</strong>: <p>@Model.OrderDto.PaymentType.ToString()</p>
+    <strong>Estado del pago</strong>: <p>@Model.OrderDto.Status.ToString()</p>
+</div>
+
+
+<div class="d-flex justify-content-center">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Nombre Producto</th>
+                <th scope="col">Precio</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model.OrderDto.Items)
+            {
+                <tr >
+                    <td scopped="row">@item.Product!.Name</td>
+                    <td scopped="row">@item.UnitPrice</td>
+                    <td scopped="row">@item.Quantity</td>
+                    <td scopped="row">@item.Total</td>
+                </tr>
+            }
+
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td scope="row">@Model.OrderDto.Total</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

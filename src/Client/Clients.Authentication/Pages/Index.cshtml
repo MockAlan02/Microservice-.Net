@@ -1,0 +1,23 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Login Page";
+}
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Vm!.Email" class="form-label">Email address</label>
+        <input type="email" class="form-control" asp-for="Vm!.Email" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <span class="text-danger" asp-validation-for="Vm!.Email"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Vm!.Password" class="form-label">Password</label>
+        <input type="password" class="form-control" asp-for="Vm!.Password" placeholder="Password">
+        <span class="text-danger" asp-validation-for="Vm!.Password"></span>
+    </div>
+    <div class="text-danger">
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

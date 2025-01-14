@@ -1,0 +1,142 @@
+﻿@page 
+@using Api.Gateway.Domain.Order.Common.Enum
+@model Clients.WebClient.Pages.Order.CreateModel
+@{
+}
+
+
+<div class="container mt-5">
+    <h2 class="mb-4">Create Order</h2>
+    <form method="post" id="form">
+
+        <div class="mb-3">
+            <label for="select1" class="form-label">Payment Type</label>
+            <select class="form-select" asp-for="@Model.OrderCreateCommand!.PaymentType">
+                <option value="" disabled selected>Select a payment Type</option>
+                @foreach (var paymentType in Enum.GetValues(typeof(OrderPayment)).Cast<OrderPayment>())
+                {
+                    <option value="@paymentType">@paymentType.ToString()</option>
+                }
+            </select>
+            <span asp-validation-for="@Model.OrderCreateCommand!.PaymentType" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="select2" class="form-label">Customer</label>
+            <select class="form-select" asp-for="@Model.OrderCreateCommand!.ClientId">
+                <option value="" disabled selected> Select a Customer</option>
+                @foreach (var customer in Model.ClientDto.Items!)
+                {
+                    <option value="@customer.Id">@customer.Name</option>
+                }
+
+            </select>
+            <span asp-validation-for="@Model.OrderCreateCommand!.ClientId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="select3" class="form-label">Select Product</label>
+            <select id="selectProduct" class="form-select">
+                <option value="" disabled selected>Seleccione un producto</option>
+                @foreach (var product in Model.ProductDto.Items!)
+                {
+                    <option value="@product.Id" data-price="@product.Price">@product.Name - @product.Price</option>
+                }
+            </select>
+            <button id="AddProduct" type="button">Agregar</button>
+        </div>
+
+
+        <div class="d-flex justify-content-center">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Item</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="ListProducts">
+                </tbody>
+            </table>
+            <span asp-validation-for="@Model.OrderCreateCommand!.Items" class="text-danger"></span>
+        </div>
+
+
+        <div class="d-flex justify-content-end">
+            <a href="/" class="btn btn-secondary">Volver</a>
+            <button type="submit" class="btn btn-primary me-2">Create</button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+
+    var listProduct = document.getElementById("ListProducts");
+    var addProductBtn = document.getElementById("AddProduct");
+    var selectProduct = document.getElementById("selectProduct");
+    const form = document.getElementById("form");
+
+    addProductBtn.addEventListener("click", function (e) {
+
+        const selectedOption = selectProduct.options[selectProduct.selectedIndex];
+        const productId = selectedOption.value;
+        const productName = selectedOption.text.split("-")[0].trim();
+        const productPrice = parseFloat(selectedOption.getAttribute("data-price"));
+
+        if (!productId) return; // Evita agregar si no hay producto seleccionado
+
+        // Crear nueva fila en la tabla
+        const row = document.createElement("tr");
+        row.innerHTML = `
+        <td scope="row">
+            <button class="btn btn-danger btn-sm remove-product">Remover</button>
+        </td>
+        <td>${productName}</td>
+        <td>$${productPrice.toFixed(2)}</td>
+        <td>
+            <input type="number" class="form-control quantity" value="1" min="1"
+            name="OrderCreateCommand.Items[${listProduct.children.length}].Quantity" />
+        </td>
+        <td class="total">$${productPrice.toFixed(2)}</td>
+        <input type="hidden" name="OrderCreateCommand.Items[${listProduct.children.length}].ProductId" value="${productId}" />
+        <input type="hidden" name="OrderCreateCommand.Items[${listProduct.children.length}].UnitPrice" value="${productPrice}" />
+    `;
+
+        listProduct.appendChild(row);
+
+
+        // Actualizar los totales dinámicamente
+        const quantityInput = row.querySelector(".quantity");
+        quantityInput.addEventListener("input", function () {
+            const quantity = parseInt(quantityInput.value) || 1;
+            const total = (productPrice * quantity).toFixed(2);
+            row.querySelector(".total").textContent = `$${total}`;
+            row.querySelector(".unit-price").value = productPrice;
+        });
+
+        // Manejar eliminación de productos
+        const removeButton = row.querySelector(".remove-product");
+        removeButton.addEventListener("click", function () {
+            row.remove();
+            updateInputNames();
+        });
+
+    });
+
+
+    // Actualizar nombres de los inputs ocultos dinámicamente
+    function updateInputNames() {
+        Array.from(listProduct.children).forEach((row, index) => {
+            row.querySelector(`[name^="Items["]`).name = `Items[${index}].ProductId`;
+            row.querySelector(`.unit-price`).name = `Items[${index}].UnitPrice`;
+        });
+    }
+
+
+
+
+</script>

@@ -1,0 +1,42 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <a href="/Order/Create" class="btn btn-secondary">Create Order</a>
+    <div class="d-flex justify-content-center">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Orden</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Tipo de pago</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders.Items!)
+                {
+                    <tr>
+                        <th scope="row"></th>
+                        <th scope="row"><a href="/Order/@order.Id">@order.CreateAt.Date</a></th>
+                        <th scope="row">@order.Client!.Name</th>
+                        <th scope="row">@order.PaymentType.ToString()</th>
+                        <th scope="row">@order.Status.ToString()</th>
+                        <th scope="row">@order.Total</th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex flex-row">
+            <a class="btn btn-secondary @(Model.HasPreviousPage ? "" : "disabled")" href="?CurrentPage=@Model.GetPreviousPage()">Anterior</a>
+        <a class="btn btn-primary @(Model.HasNextPage ? "" : "disabled")" href="?CurrentPage=@Model.GetNextPage()">Next</a>
+    </div>
+</div>
